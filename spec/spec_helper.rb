@@ -3,20 +3,30 @@ require 'rspec'
 require 'watir-webdriver'
 require 'watir/rspec'
 
-# require_relative ''
+require_relative  '../helpers/index'
 
-# set browser
-# add yaml data
+# include pages
+require_relative  '../lib/index'
+require_relative  '../lib/login.page'
+require_relative  '../lib/profile.page'
+
+# i shoold set browser
+# i shoold set user ?
+
+# TEST_ENV = ENV['TEST_ENV']
+TEST_ENV = "local"
+CONFIG = YAML.load(File.read(File.join(File.dirname(__FILE__), "../config/#{TEST_ENV}.yml")))
+BASE_URL = CONFIG["base_url"]
 
 RSpec.configure do |config|
-  config.expect_with :rspec do |expectations|
-    expectations.include_chain_clauses_in_custom_matcher_descriptions = true
-    expectations.syntax = :expect
+  config.before :all do
+    @browser = Watir::Browser.new :chrome
+    # @base_url = CONFIG["base_url"]
+    @user_email = CONFIG["administrator"]["email"]
+    @user_pass = CONFIG["administrator"]["pass"]
+    @user_role = CONFIG["administrator"]["role"]
   end
-
-  config.mock_with :rspec do |mocks|
-    mocks.verify_partial_doubles = true
+  config.after :all do
+    @browser.close 
   end
-
-  config.shared_context_metadata_behavior = :apply_to_host_groups
 end
